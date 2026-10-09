@@ -54,3 +54,25 @@ All notable changes to the andrewN build series. Based on
 
 ### Verified
 - 617 unit tests pass; dex audit: new paths present, `usbprotect` 0 hits, MFi assets bundled.
+
+## Field data — 2026-10-09 (andrew3, 333 windows)
+
+Five diagnostic reports from the target head unit (XY AUTO / MTK / 1024×600 hotspot mode),
+333 five-second stats windows merged:
+
+- **recoveries = 0 across all windows** — the 250 ms decoder-rebuild loop is fully eliminated
+  by the catch-up mechanism (downstream of upstream #347, independently confirmed).
+- **touch2frame**: ≤80 ms in 60% of windows, 81-150 ms in 23%, >150 ms in 17% — touch latency
+  acceptable; head-unit processing chain is not the bottleneck.
+- **rx frame rate**: avg 19.9 fps (target 30), 28% of windows below 15 fps; **maxGap peak
+  1761 ms**, 34% of windows above 300 ms — the remaining stutter is upstream delivery jitter
+  (iPhone → head-unit hotspot, 2.4 GHz, no channel/band control in firmware).
+- shown ≈ rx throughout — decode/render keeps up; 60% quality tier (−64% decode load) still
+  stutters, ruling out decoder throughput.
+
+**Conclusion**: software-side work is done and field-verified; residual stutter is a physical
+property of the hotspot link. Next candidate: wired USB CarPlay (480 Mbps constant bandwidth,
+zero jitter — hits the exact remaining bottleneck; the code path already exists in the tree).
+Known issue: the report header version string is hard-coded (`0.2.13-H52-P16`) and does not
+reflect build `versionName` — andrew2/andrew3 builds cannot be distinguished from reports.
+Fix queued: read `BuildConfig.VERSION_NAME` in the report header.
