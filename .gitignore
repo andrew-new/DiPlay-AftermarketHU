@@ -1,0 +1,16 @@
+# Authentication assets and signing material — NEVER commit
+mfi-assets/
+*.pk8
+*.p7b
+*.keystore
+*.jks
+
+# Build outputs
+build/
+*.apk
+*.aab
+
+# IDE / OS
+.DS_Store
+.idea/
+local.properties
